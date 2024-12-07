@@ -9,7 +9,7 @@
  * Plugin Name:       Spreadsheet Integration – Google sheet Integration, Sync & Display.
  * Plugin URI:        https://wordpress.org/plugins/wpgsi
  * Description:       Spreadsheet Integration, Connects WordPress events and most popular plugin with  Google Sheets via API. 
- * Version:           3.8.1
+ * Version:           3.8.2
  * Author:            javmah
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
@@ -75,7 +75,7 @@ if ( function_exists( 'wpgsi_fs' ) ) {
      * Start at version 1.0.0 and use SemVer - https://semver.org
      * Rename this for your plugin and update it as you release new versions.
      */
-    define( 'WPGSI_VERSION', '3.8.1' );
+    define( 'WPGSI_VERSION', '3.8.2' );
     /**
      * The code that runs during plugin activation.
      * This action is documented in includes/class-wpgsi-activator.php

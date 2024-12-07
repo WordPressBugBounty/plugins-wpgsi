@@ -1,9 +1,9 @@
 === Spreadsheet Integration – Automate Google Sheets With WordPress, WooCommerce & Most Popular Form Plugins. Also, Display Google sheet as a Table. ===
 Contributors: javmah, freemius
-Tags:spreadsheet,google-sheets,WooCommerce,automation,Google,
+Tags:spreadsheet,google-sheets,contact-form-7,WooCommerce,automation,Google,
 Requires at least: 5.5.0
 Tested up to: 6.6.2
-Stable tag: 3.8.1
+Stable tag: 3.8.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -205,6 +205,9 @@ ITTF for WordPress Google Spreadsheet Integration.
 9. Service account credentials.
 
 == Changelog ==
+
+= v3.8.2 (07 December, 2023) =
+* Freemius SDK version Change.
 
 = v3.8.1 (03 October, 2023) =
 * Tags sent and update added.
