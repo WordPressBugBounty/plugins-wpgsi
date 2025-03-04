@@ -1370,6 +1370,38 @@ class Wpgsi_Events {
         }
     }
 
+    #
+    #
+    # NEW CODE STARTS FROM HERE.
+    #
+    #
+    /**
+     * * *
+     * wpgsi_wooCommerce_new_order_metaKeys, this function will come after new high performance order storage HPOS
+     * this will collect all the new meta keys.
+     */
+    public function wpgsi_wooCommerce_new_order_metaKeys() {
+        # Global Db object.
+        global $wpdb;
+        #
+        if ( !isset( $wpdb ) ) {
+            return array(FALSE, 'ERROR: $wpdb not defined.');
+        }
+        # New Code Starts.
+        $meta_keys = $wpdb->get_col( "SELECT DISTINCT meta_key FROM {$wpdb->prefix}wc_orders_meta" );
+        # return Depend on the Query result.
+        if ( empty( $meta_keys ) ) {
+            return array(FALSE, 'EMPTY ! No Meta key exist of the Post type X');
+        } else {
+            return array(TRUE, $meta_keys);
+        }
+    }
+
+    #
+    #
+    # NEW CODE ENDS HERE.
+    #
+    #
     # Getting Meta Key of WooCommerce Order, Product, Post, Page, User, Comment Meta Keys
     /**
      * This Function will return [WooCommerce Order] Meta keys.

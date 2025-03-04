@@ -40,14 +40,13 @@ class Wpgsi {
 	 * Set the plugin name and the plugin version that can be used throughout the plugin.
 	 * Load the dependencies, define the locale, and set the hooks for the admin area and
 	 * the public-facing side of the site.
-	 *
 	 * @since   1.0.0
 	 */
 	public function __construct() {
 		if(defined('WPGSI_VERSION')){
 			$this->version = WPGSI_VERSION;
 		} else {
-			$this->version = '3.8.2';
+			$this->version = '3.8.3';
 		}
 
 		$this->plugin_name = 'wpgsi';
@@ -198,7 +197,7 @@ class Wpgsi {
 		$this->loader->add_action('admin_post_save_google_show',	 			$wpgsi_show, 'wpgsi_save_google_show');									
 		$this->loader->add_action('wp_ajax_wpgsi_ajaxWorksheetData',	 		$wpgsi_show, 'wpgsi_ajaxWorksheetData');																	
 		$this->loader->add_action('init',	 									$wpgsi_show, 'wpgsi_wpShortCode');		
-		#wpgsi cron events 
+		# wpgsi cron events 
 		$this->loader->add_action('cron_schedules',  							$wpgsi_show, 'wpgsi_add_cron_schedule');									
 		$this->loader->add_action('init',	 									$wpgsi_show, 'wpgsi_wp_next_scheduled');	
 		$this->loader->add_action('wpgsi_every_5_minutes',	 					$wpgsi_show, 'wpgsi_every_5_minutes_cron');																

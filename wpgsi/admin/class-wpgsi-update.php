@@ -769,6 +769,7 @@ class Wpgsi_Update {
                     break;
                 }
             }
+            # loop ends here
             # Update Product list cache with remaining list item
             update_option( 'wpgsi_remote_data', $savedData );
             # Preparing response

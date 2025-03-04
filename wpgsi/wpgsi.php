@@ -9,7 +9,7 @@
  * Plugin Name:       Spreadsheet Integration – Google sheet Integration, Sync & Display.
  * Plugin URI:        https://wordpress.org/plugins/wpgsi
  * Description:       Spreadsheet Integration, Connects WordPress events and most popular plugin with  Google Sheets via API. 
- * Version:           3.8.2
+ * Version:           3.8.3
  * Author:            javmah
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
@@ -63,7 +63,7 @@ if ( function_exists( 'wpgsi_fs' ) ) {
         do_action( 'wpgsi_fs_loaded' );
     }
     /**
-     * test purpose s
+     * test purpose
      */
     add_action( 'activated_plugin', 'save_error_wpgsi' );
     function save_error_wpgsi() {
@@ -75,7 +75,7 @@ if ( function_exists( 'wpgsi_fs' ) ) {
      * Start at version 1.0.0 and use SemVer - https://semver.org
      * Rename this for your plugin and update it as you release new versions.
      */
-    define( 'WPGSI_VERSION', '3.8.2' );
+    define( 'WPGSI_VERSION', '3.8.3' );
     /**
      * The code that runs during plugin activation.
      * This action is documented in includes/class-wpgsi-activator.php
@@ -124,7 +124,7 @@ if ( function_exists( 'wpgsi_fs' ) ) {
 # You can contact me with this email : jaedmah@gmail.com
 # Thank you & Kindest regards -jav
 # To Do List
-# 1. Check all the Forms
+# 1. Check all the Forms s
 # 2. Change the Update code, Add more log coverage in the Update
 # 3. Change Update code
 # 2. Get all the meta-data of Woo-Commerce

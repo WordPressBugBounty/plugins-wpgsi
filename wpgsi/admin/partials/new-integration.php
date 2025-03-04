@@ -68,9 +68,9 @@
                                 </tr>
                                 <!-- Spacer Ends -->
                                 <tr>
-                                    <td class="row-title">  <label> Worksheet Column Title  </label> </td>
-                                    <td class="row-title"> <label>  Column & Event relation  </label> </td>
-                                    <td class="row-title">   <label>  Event Data  </label> </td>
+                                    <td class="row-title"> <label> Worksheet Column Title       </label> </td>
+                                    <td class="row-title"> <label>  Column & Event relation     </label> </td>
+                                    <td class="row-title"> <label>  Event Data                  </label> </td>
                                 </tr>
                                 <tr v-for="(value, name, index)  in WorksheetColumnsTitle" :class=" index % 2 ? '' : 'alternate' " >
                                     <td> <label for="tablecell">  <b> {{ name }} : {{value}} </b>   </label> </td>

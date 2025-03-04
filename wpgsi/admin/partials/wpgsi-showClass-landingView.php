@@ -1,6 +1,6 @@
 <div class="wrap">
-	<div id="icon-options-general" class="icon32"> </div>
-	
+    <div id="icon-options-general" class="icon32"> </div>
+    
     <h2> 
         <?php esc_attr_e( "Google Sheet table view list", "wpgsi" ); ?> 
         <a class="button-secondary" href="<?php echo admin_url( 'admin.php?page=wpgsi-show&action=new' ); ?> " title="<?php esc_attr_e( 'Create new sheet table view' ); ?>"><?php esc_attr_e( 'Create new sheet table view' ); ?></a>
@@ -30,6 +30,7 @@
                                 )); 
                     // Looping for creating the row 
                     foreach ($wpgsiShow as $key => $value) {
+                        $nonce = wp_create_nonce('wpgsi_status_change_' . $value->ID);
                         echo ($key % 2 ) ? "<tr>" : "<tr class='alternate'>";
                             # ID
                             echo "<td>";
@@ -68,7 +69,8 @@
                                 # getting last sync information 
                                 $lastSyncTime = esc_html(get_post_meta($value->ID, 'lastSyncTime', true));
                                 if( $syncFrequency == 'manually'){
-                                    echo"<a class='button-secondary' title='last sync " . $lastSyncTime . "' href='admin.php?page=wpgsi-show&action=sync&id=" . esc_html($value->ID) . "' > click to sync Google sheet </a>";
+                                    $sync_nonce = wp_create_nonce('wpgsi_sync_' . $value->ID);
+                                    echo"<a class='button-secondary' title='last sync " . $lastSyncTime . "' href='admin.php?page=wpgsi-show&action=sync&id=" . esc_html($value->ID) . "&_wpnonce=" . $sync_nonce . "' > click to sync Google sheet </a>";
                                 } else {
                                     if(isset($this->syncFrequency[$syncFrequency])){
                                         echo esc_html($this->syncFrequency[$syncFrequency]);
@@ -84,15 +86,10 @@
                             # Showing shotcode 
                             echo"<td style='text-align: center;vertical-align: middle;' title='Copy this shortcode and paste it into Page or Post.'> <code> [wpgsi id=\"". esc_html($value->ID) ."\"] </code> </td>";
                             # change this depends on  post status 
-                            if(isset($value->post_status) AND $value->post_status == 'publish'){
-                                echo"<td style='text-align: center;vertical-align: middle;' title='Enable and Disable sync and display.' >";
-                                    echo"<input onclick='window.location=\"admin.php?page=wpgsi-show&action=status&id=" . esc_html($value->ID) . "\"'  type='checkbox' name='status' checked=checked >";
-                                echo"</td>";
-                            } else {
-                                echo"<td style='text-align: center;vertical-align: middle;' title='Enable and Disable sync and display' >";
-                                    echo"<input onclick='window.location=\"admin.php?page=wpgsi-show&action=status&id=" . esc_html($value->ID) . "\"'  type='checkbox' name='status' >"; 
-                                echo"</td>";
-                            }
+                            echo"<td style='text-align: center;vertical-align: middle;' title='Enable and Disable sync and display.' >";
+                                echo"<input onclick='window.location=\"admin.php?page=wpgsi-show&action=status&id=" . esc_html($value->ID) . "&_wpnonce=" . $nonce . 
+                                "\"'  type='checkbox' name='status' " . ($value->post_status == 'publish' ? 'checked=checked' : '') . ">";
+                            echo"</td>";
                         echo"</tr>";
                     }
                 ?>
@@ -111,4 +108,4 @@
         </table>
         
     </div>
-</div> 
+</div>

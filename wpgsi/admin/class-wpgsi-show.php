@@ -173,7 +173,7 @@ class Wpgsi_Show {
 
     /**
      * This is a Admin notification function 
-     * This Will use for test and Debug 
+     * This Will use for test and Debug.
      * @since    	 3.7.3
      * @return 	   	array 	Integrations details.
      */
@@ -205,6 +205,11 @@ class Wpgsi_Show {
                     wp_redirect( 'admin.php?page=wpgsi-show&msg=success' );
                 } else {
                     if ( $action == 'status' and !empty( $id ) ) {
+                        #new code is in Here
+                        // Verify nonce
+                        if ( !isset( $_GET['_wpnonce'] ) || !wp_verify_nonce( $_GET['_wpnonce'], 'wpgsi_status_change_' . $id ) ) {
+                            wp_die( 'Security check failed' );
+                        }
                         # check the Post type status
                         if ( get_post( $id )->post_status == 'publish' ) {
                             $post = array(
@@ -228,6 +233,11 @@ class Wpgsi_Show {
                         ( wp_update_post( $post ) ? wp_redirect( admin_url( 'admin.php?page=wpgsi-show&msg=success' ) ) : wp_redirect( admin_url( '/admin.php?page=wpgsi-show&msg=fail' ) ) );
                     } else {
                         if ( $action == 'sync' and !empty( $id ) ) {
+                            # new code is in here
+                            // Verify nonce
+                            if ( !isset( $_GET['_wpnonce'] ) || !wp_verify_nonce( $_GET['_wpnonce'], 'wpgsi_sync_' . $id ) ) {
+                                wp_die( 'Security check failed' );
+                            }
                             # getting spreadsheet ID
                             $spreadsheetID = sanitize_text_field( get_post_meta( $id, 'spreadsheetID', true ) );
                             # getting worksheet Name

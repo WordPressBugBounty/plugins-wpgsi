@@ -122,7 +122,7 @@ class Wpgsi_Settings {
 			# For Log Page 
 			echo"<div class='wrap'>";
 				echo"<h1 class='wp-heading-inline'>  Log Page ";
-					if(! $logStatusOption  OR $logStatusOption == 'enable'  ){
+					if(! $logStatusOption  OR $logStatusOption == 'enable'){
 						echo"<span onclick='window.location=\"admin.php?page=wpgsi-settings&action=logStatus\"' ><code>Log status <input type='checkbox' checked=checked ></code></span>&#32;";
 					} else {
 						echo"<span style='color:red;' onclick='window.location=\"admin.php?page=wpgsi-settings&action=logStatus\"' ><code>Log status <input type='checkbox' ></code></span>&#32; ";
@@ -132,9 +132,9 @@ class Wpgsi_Settings {
 					echo"<code>V". esc_html($this->version) ."</code> &#32;&#32; <code>". esc_html($this->events->wpgsi_integrations()[2]) ." Active Integration</code> &#32;&#32; <code>". esc_html($this->events->wpgsi_integrations()[3]) ." Hold Integration</code>";
 				echo"</h1>";
 			
-				$wpgsi_logs = get_posts( array('post_type' => 'wpgsi_log', 'order' => 'DESC', 'posts_per_page' => -1) );
+				$wpgsi_logs = get_posts(array('post_type' => 'wpgsi_log', 'order' => 'DESC', 'posts_per_page' => -1));
 				$i = 1 ;
-				foreach ( $wpgsi_logs as $key => $log ) {
+				foreach( $wpgsi_logs as $key => $log ){
 					$post_excerpt = json_decode( $log->post_excerpt  );
 					if ( $log->post_title == 200 ) {
 						echo"<div class='notice notice-success inline'>";
@@ -160,7 +160,7 @@ class Wpgsi_Settings {
 			# for service-account-help slug !
 			require_once plugin_dir_path(dirname(__FILE__)).'admin/partials/wpgsi-service-ac-help-display.php';
 		} elseif ( $action == 'logStatus' ){
-			
+			#
 			if(! $logStatusOption  OR  $logStatusOption == 'enable'){
 				# disabling the log
 				update_option( 'wpgsi_logStatus', 'disable' );

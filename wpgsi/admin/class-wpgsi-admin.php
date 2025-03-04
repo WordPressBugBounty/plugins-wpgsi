@@ -594,6 +594,9 @@ class Wpgsi_Admin {
     # comments;
     public function wpgsi_admin_notices() {
         // echo "<pre>";
+        //
+        //
+        //
         // echo"</pre>";
     }
 
@@ -1778,6 +1781,29 @@ class Wpgsi_Admin {
         # return Depend on the Query result
         if ( empty( $meta_keys ) ) {
             return array(FALSE, 'ERROR: Empty! No Meta key exist on comment meta.');
+        } else {
+            return array(TRUE, $meta_keys);
+        }
+    }
+
+    /**
+     * * *
+     * wpgsi_wooCommerce_new_order_metaKeys, this function will come after new high performance order storage HPOS
+     * this will collect all the new meta keys.
+     * * *
+     */
+    public function wpgsi_wooCommerce_new_order_metaKeys() {
+        # Global Db object.
+        global $wpdb;
+        #
+        if ( !isset( $wpdb ) ) {
+            return array(FALSE, 'ERROR: $wpdb not defined.');
+        }
+        # New Code Starts.
+        $meta_keys = $wpdb->get_col( "SELECT DISTINCT meta_key FROM {$wpdb->prefix}wc_orders_meta" );
+        # return Depend on the Query result.
+        if ( empty( $meta_keys ) ) {
+            return array(FALSE, 'EMPTY ! No Meta key exist of the Post type X');
         } else {
             return array(TRUE, $meta_keys);
         }
