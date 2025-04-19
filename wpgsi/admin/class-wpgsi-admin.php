@@ -594,9 +594,7 @@ class Wpgsi_Admin {
     # comments;
     public function wpgsi_admin_notices() {
         // echo "<pre>";
-        //
-        //
-        //
+        // 	echo'Bismillah hir Rahmaner Rahim';
         // echo"</pre>";
     }
 

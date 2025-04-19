@@ -876,6 +876,44 @@ class Wpgsi_Update {
                         }
                     }
                 } else {
+                    # check the argument list for creating a new user,
+                    $r = wp_insert_post( $dataArray['mainData'] );
+                    # check is there any error
+                    if ( is_wp_error( $r ) ) {
+                        # Keeping the Log
+                        $this->common->wpgsi_log(
+                            get_class( $this ),
+                            __METHOD__,
+                            "327",
+                            "ERROR: post is not created . " . $r->get_error_message()
+                        );
+                    } else {
+                        $post = get_post( $r );
+                        # insert user meta data
+                        foreach ( $dataArray['metaData'] as $meta_key => $meta_value ) {
+                            update_post_meta( $post->ID, $meta_key, $meta_value );
+                        }
+                        # Adding or Updating Categories
+                        if ( !empty( $categoryNamesArr ) && function_exists( 'get_term_by' ) && function_exists( 'wp_set_post_terms' ) ) {
+                            # Initialize an array to hold category IDs
+                            $category_ids = array();
+                            # Loop through each category name
+                            foreach ( $categoryNamesArr as $category_name ) {
+                                // Get the category by name
+                                $category = get_term_by( 'name', $category_name, 'category' );
+                                // Check if the category was found
+                                if ( $category ) {
+                                    // Get the category ID and add it to the array
+                                    $category_ids[] = $category->term_id;
+                                }
+                            }
+                            # If any valid categories were found, assign them to the post
+                            if ( !empty( $category_ids ) ) {
+                                // Assign categories using their IDs
+                                wp_set_post_terms( $post->ID, $category_ids, 'category' );
+                            }
+                        }
+                    }
                 }
                 # unset the inserted array item.
                 unset($savedData[$key]);
@@ -1042,6 +1080,76 @@ class Wpgsi_Update {
                         $result = wp_set_post_terms( $dataArray['mainData']['ID'], $product_category_ids, 'product_cat' );
                     }
                 } else {
+                    # check the argument list for creating a new user,
+                    $r = wp_insert_post( $dataArray['mainData'] );
+                    # check is there any error
+                    if ( is_wp_error( $r ) ) {
+                        # Keeping the Log
+                        $this->common->wpgsi_log(
+                            get_class( $this ),
+                            __METHOD__,
+                            "327",
+                            "ERROR: post is not created . " . $r->get_error_message()
+                        );
+                    } else {
+                        $post = get_post( $r );
+                        # insert user meta data
+                        foreach ( $dataArray['metaData'] as $meta_key => $meta_value ) {
+                            update_post_meta( $post->ID, $meta_key, $meta_value );
+                        }
+                        # Insert the tags
+                        if ( !empty( $tagsArr ) ) {
+                            wp_set_object_terms(
+                                $post->ID,
+                                $tagsArr,
+                                'product_tag',
+                                true
+                            );
+                            // 'true' ensures tags are appended, not overwritten
+                        }
+                        # Inserting attributes term
+                        foreach ( $productAttributeArray as $attribute_slug => $attribute_value_array ) {
+                            if ( is_array( $attribute_value_array ) && !empty( $attribute_value_array ) ) {
+                                foreach ( $attribute_value_array as $term_name ) {
+                                    // Insert attribute || Check if the term exists in the attribute taxonomy
+                                    $term = term_exists( $term_name, $attribute_slug );
+                                    // If the term doesn't exist, create it
+                                    if ( !$term ) {
+                                        $term = wp_insert_term( $term_name, $attribute_slug );
+                                    }
+                                    // Get the term ID
+                                    $term_id = ( is_array( $term ) ? $term['term_id'] : $term );
+                                    // Assign the term to the product
+                                    wp_set_object_terms(
+                                        $post->ID,
+                                        (int) $term_id,
+                                        $attribute_slug,
+                                        true
+                                    );
+                                    // Clear WooCommerce cache for the product to ensure changes are reflected immediately
+                                    wc_delete_product_transients( $post->ID );
+                                }
+                            }
+                        }
+                        # Adding product category
+                        # Initialize an array to hold product category IDs
+                        $product_category_ids = array();
+                        # Loop through each product category name
+                        foreach ( $product_category_names as $product_category_name ) {
+                            # Get the product category by name from the 'product_cat' taxonomy
+                            $category = get_term_by( 'name', $product_category_name, 'product_cat' );
+                            # Check if the category was found
+                            if ( $category ) {
+                                # Get the category ID and add it to the array
+                                $product_category_ids[] = $category->term_id;
+                            }
+                        }
+                        # If any valid product categories were found, assign them to the product
+                        if ( !empty( $product_category_ids ) ) {
+                            # Assign product categories using their IDs
+                            $result = wp_set_post_terms( $post->ID, $product_category_ids, 'product_cat' );
+                        }
+                    }
                 }
                 # unset the inserted array item.
                 unset($savedData[$key]);
