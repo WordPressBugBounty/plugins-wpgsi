@@ -6,7 +6,7 @@
  * @package           Wpgsi
  *
  * @wordpress-plugin
- * Plugin Name:       Spreadsheet Integration – Google sheet Integration, Sync & Display.
+ * Plugin Name:       WPGSI: Spreadsheet Integration
  * Plugin URI:        https://wordpress.org/plugins/wpgsi
  * Description:       Spreadsheet Integration, Connects WordPress events and most popular plugin with  Google Sheets via API. 
  * Version:           3.8.3

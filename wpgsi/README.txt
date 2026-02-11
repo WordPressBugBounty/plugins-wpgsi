@@ -1,8 +1,8 @@
-=== Spreadsheet Integration – Automate Google Sheets With WordPress, WooCommerce & Most Popular Form Plugins. Also, Display Google sheet as a Table. ===
+=== WPGSI: Spreadsheet Integration ===
 Contributors: javmah, freemius
 Tags:spreadsheet,google-sheets,contact-form-7,WooCommerce,automation,Google,
 Requires at least: 5.5.0
-Tested up to: 6.7.2
+Tested up to: 6.9
 Stable tag: 3.8.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
