@@ -96,14 +96,83 @@ class Wpgsi_Update {
         register_rest_route( 'wpgsi', '/accept', array(
             'methods'             => 'POST',
             'callback'            => array($this, 'wpgsi_callBackFuncAccept'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'wpgsi_permission_check'),
+            'args'                => array(
+                'token' => array(
+                    'required' => true,
+                    'type'     => 'string',
+                ),
+            ),
         ) );
         # For updating data site data
         register_rest_route( 'wpgsi', '/update', array(
             'methods'             => 'GET',
             'callback'            => array($this, 'wpgsi_callBackFuncUpdate'),
-            'permission_callback' => '__return_true',
+            'permission_callback' => array($this, 'wpgsi_permission_check'),
+            'args'                => array(
+                'token' => array(
+                    'required' => true,
+                    'type'     => 'string',
+                ),
+            ),
         ) );
+    }
+
+    /**
+     * Permission callback for REST routes
+     */
+    public function wpgsi_permission_check( $request ) {
+        $token = $request->get_param( 'token' );
+        // Fallback: Check JSON body explicitly if get_param fails
+        if ( empty( $token ) ) {
+            $json_params = $request->get_json_params();
+            if ( !empty( $json_params ) && isset( $json_params['token'] ) ) {
+                $token = $json_params['token'];
+            }
+        }
+        if ( empty( $token ) ) {
+            // Try getting from headers if not in params - just in case
+            $token = $request->get_header( 'x-wpgsi-token' );
+            if ( empty( $token ) ) {
+                $this->common->wpgsi_log(
+                    get_class( $this ),
+                    __METHOD__,
+                    "401",
+                    "ERROR: Token not provided in request params (param/json/header)."
+                );
+                return new WP_Error('rest_forbidden', 'Token missing from request', array(
+                    'status' => 401,
+                ));
+            }
+        }
+        $decoded = base64_decode( $token );
+        if ( false === $decoded || strpos( $decoded, '.' ) === false ) {
+            $this->common->wpgsi_log(
+                get_class( $this ),
+                __METHOD__,
+                "401",
+                "ERROR: Token decode failed or format invalid."
+            );
+            return new WP_Error('rest_forbidden', 'Invalid token format', array(
+                'status' => 401,
+            ));
+        }
+        // Update the wpgsi_permission_check to match the new format
+        list( $payload, $signature ) = explode( '.', $decoded, 2 );
+        $expected_signature = hash_hmac( 'sha256', $payload, wp_salt( 'auth' ) );
+        # NOTE: $payload is now Base64(JSON). This fixes the "dot in JSON" bug.
+        if ( hash_equals( $expected_signature, $signature ) ) {
+            return true;
+        }
+        $this->common->wpgsi_log(
+            get_class( $this ),
+            __METHOD__,
+            "401",
+            "ERROR: Token signature mismatch. Payload: " . $payload
+        );
+        return new WP_Error('rest_forbidden', 'Signature Mismatch.', array(
+            'status' => 401,
+        ));
     }
 
     /**
@@ -134,7 +203,15 @@ class Wpgsi_Update {
             return $response;
         }
         # converting data from base64 string
-        $jsonString = @base64_decode( $data['token'] );
+        $decoded = base64_decode( $data['token'] );
+        if ( strpos( $decoded, '.' ) !== false ) {
+            list( $b64Payload, $signature ) = explode( '.', $decoded, 2 );
+            $jsonString = base64_decode( $b64Payload );
+            // Fix: Decode payload to get JSON
+        } else {
+            $jsonString = "";
+            // Fail
+        }
         # encoding JSON string to PHP array
         $updateInfo = json_decode( $jsonString, TRUE );
         # User information validation;  $updateInfo array and isset( ) check for ID, UID, email
@@ -601,6 +678,18 @@ class Wpgsi_Update {
         # Setting Update List on the Site Option cache *** important without saving it will n
         update_option( 'wpgsi_remote_data', $processedData );
         update_option( 'wpgsi_integrationID', $Integration->ID );
+        # Fix: Save original status to restore it correctly after update
+        # Save current status if original status hasn't been saved yet for this update cycle.
+        $existing_original_status = get_option( 'wpgsi_integration_original_status' );
+        if ( empty( $existing_original_status ) ) {
+            update_option( 'wpgsi_integration_original_status', $Integration->post_status );
+        } else {
+            # If we already have a status saved, and the current status is publish, update it.
+            # This handles the case where a previous run crashed but the user re-enabled the integration manually.
+            if ( $Integration->post_status == 'publish' ) {
+                update_option( 'wpgsi_integration_original_status', 'publish' );
+            }
+        }
         # After Update to the Array Unset The Variable For Memory management || clear the Memory
         unset($data);
         unset($updateInfo);
@@ -657,7 +746,12 @@ class Wpgsi_Update {
             # getting the Integration.
             $post = get_post( $integration_id );
             # if Post is Publish, Stop the Post by making it Pending.
+            # Only do this if we haven't already saved the status for this update cycle.
             if ( $post->post_status == 'publish' ) {
+                # If we are here, it means we are catching an integration that is still published.
+                # This could be the FIRST batch of an update.
+                # We should ensure we saved its state.
+                update_option( 'wpgsi_integration_original_status', 'publish' );
                 $update_post = array(
                     'ID'          => $integration_id,
                     'post_status' => 'pending',
@@ -707,14 +801,20 @@ class Wpgsi_Update {
         if ( empty( $savedData ) ) {
             # getting  integration ID
             $post = get_post( $integration_id );
-            # if integration is  Pending Publish the integration
-            if ( $post->post_status == 'pending' ) {
+            # Restore original status logic
+            $original_status = get_option( 'wpgsi_integration_original_status' );
+            # Only re-enable if it was originally 'publish'
+            if ( $original_status === 'publish' ) {
+                # Logic: Always try to restore to publish if original was publish,
+                # regardless of current status, to ensure consistency.
                 $update_post = array(
                     'ID'          => $integration_id,
                     'post_status' => 'publish',
                 );
                 wp_update_post( $update_post, true );
             }
+            # Clean up original status option
+            delete_option( 'wpgsi_integration_original_status' );
             # Delete Product cache Too || no garbage
             delete_option( 'wpgsi_remote_data' );
             # Delete wpgsi_integrationID

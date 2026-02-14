@@ -119,13 +119,14 @@ class Wpgsi_Settings {
 		# Routing Starts
 		# if it is log then User Will Go this True side, to see the log 
 		if($action == 'log'){
+			$logNonce = wp_create_nonce('wpgsi_log_status_nonce');
 			# For Log Page 
 			echo"<div class='wrap'>";
 				echo"<h1 class='wp-heading-inline'>  Log Page ";
 					if(! $logStatusOption  OR $logStatusOption == 'enable'){
-						echo"<span onclick='window.location=\"admin.php?page=wpgsi-settings&action=logStatus\"' ><code>Log status <input type='checkbox' checked=checked ></code></span>&#32;";
+						echo"<span onclick='window.location=\"admin.php?page=wpgsi-settings&action=logStatus&_wpnonce=". $logNonce ."\"' ><code>Log status <input type='checkbox' checked=checked ></code></span>&#32;";
 					} else {
-						echo"<span style='color:red;' onclick='window.location=\"admin.php?page=wpgsi-settings&action=logStatus\"' ><code>Log status <input type='checkbox' ></code></span>&#32; ";
+						echo"<span style='color:red;' onclick='window.location=\"admin.php?page=wpgsi-settings&action=logStatus&_wpnonce=". $logNonce ."\"' ><code>Log status <input type='checkbox' ></code></span>&#32; ";
 					}
 
 					echo"<code>Last 200 log</code> &#32;&#32; ";
@@ -160,6 +161,10 @@ class Wpgsi_Settings {
 			# for service-account-help slug !
 			require_once plugin_dir_path(dirname(__FILE__)).'admin/partials/wpgsi-service-ac-help-display.php';
 		} elseif ( $action == 'logStatus' ){
+			if ( ! isset( $_REQUEST['_wpnonce'] ) || ! wp_verify_nonce( $_REQUEST['_wpnonce'], 'wpgsi_log_status_nonce' ) ) {
+				$this->common->wpgsi_log(get_class($this), __METHOD__,"403", "ERROR : Security check failed (nonce).");
+				wp_die( 'Security check failed' ); 
+			}
 			#
 			if(! $logStatusOption  OR  $logStatusOption == 'enable'){
 				# disabling the log

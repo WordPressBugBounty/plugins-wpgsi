@@ -74,7 +74,7 @@
             console.log("SUCCESS: Site successfully saved the data to the Option table.");
             // request for update loop starts
             for(let i = 1; i < 10; i++){
-                var updateResponse      = UrlFetchApp.fetch("<?php echo get_site_url() . '/wp-json/wpgsi/update'?>");
+                var updateResponse      = UrlFetchApp.fetch("<?php echo get_site_url() . '/wp-json/wpgsi/update' . '?token=' . $userToken ?>");
                 var updateResponseJSON  = JSON.parse(updateResponse.getContentText());
                 // Breaking the update request Loop if Update successfully completed
                 if(updateResponseJSON['code'] && updateResponseJSON['code'] == 202){
@@ -173,7 +173,6 @@
             </p>
         </div>
       
-
         <div id='step_4'>
             <br><br>
             <h3> <span style='color:red;'> Step 3 : </span> Tips, Tricks & Safety measures. </h3>

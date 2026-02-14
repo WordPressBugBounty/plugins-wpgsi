@@ -440,7 +440,8 @@ class Wpgsi_List_Table extends WP_List_Table {
                     // AJAX Data 
                     var data = {
                         "action" 	    : 'wpgsi_changeIntegrationStatus',
-                        "integrationID" : integrationID
+                        "integrationID" : integrationID,
+                        "wpgsi_nonce"   : "<?php echo wp_create_nonce('wpgsi_ajax_nonce'); ?>"
                     };
                     // Request Object 
                     let request = new XMLHttpRequest();
@@ -468,6 +469,7 @@ class Wpgsi_List_Table extends WP_List_Table {
                         "action" 	      : 'wpgsi_createSheetColumnTitles',
                         "integrationID"   : integrationID,
                         "eventsAndTitles" : eventsAndTitles,
+                        "wpgsi_nonce"     : "<?php echo wp_create_nonce('wpgsi_ajax_nonce'); ?>"
                     };
                     // Request Object 
                     let request = new XMLHttpRequest();
@@ -493,7 +495,8 @@ class Wpgsi_List_Table extends WP_List_Table {
                     // AJAX Data 
                     var data = {
                         "action" 	    : 'wpgsi_changeRemoteUpdateStatus',
-                        "integrationID" : integrationID
+                        "integrationID" : integrationID,
+                        "wpgsi_nonce"   : "<?php echo wp_create_nonce('wpgsi_ajax_nonce'); ?>"
                     };
                     // Request Object 
                     let request = new XMLHttpRequest();

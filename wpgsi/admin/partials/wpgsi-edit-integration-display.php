@@ -11,6 +11,7 @@
                 <!-- <pre> {{ $data }}  </pre>  -->
                 <br>
                 <form action="<?php echo esc_url(admin_url('admin-post.php'));?>" method="post">
+                    <?php wp_nonce_field( 'wpgsi_save_integration_action', 'wpgsi_nonce' ); ?>
                     <input type="hidden" name="action" value="wpgsi_Integration">
                     <input type="hidden" name="status" value="edit_Integration" />
                     <input type="hidden" name="ID" value= "<?php echo esc_attr($_GET["id"]);?>"/>

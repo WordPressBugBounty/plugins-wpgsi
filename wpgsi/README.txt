@@ -3,7 +3,7 @@ Contributors: javmah, freemius
 Tags:spreadsheet,google-sheets,contact-form-7,WooCommerce,automation,Google,
 Requires at least: 5.5.0
 Tested up to: 6.9
-Stable tag: 3.8.3
+Stable tag: 3.8.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -206,6 +206,11 @@ ITTF for WordPress Google Spreadsheet Integration.
 
 == Changelog ==
 
+= v3.8.4 (14 February, 2026) =
+* Freemius SDK version Change.
+* Security patch added.
+* Bug fix.
+
 = v3.8.3 (13 February, 2025) =
 * Freemius SDK version Change.
 
@@ -217,7 +222,7 @@ ITTF for WordPress Google Spreadsheet Integration.
 * Attributes sent and update added.
 * Category sent and update added.
 * Security issue fixed.
-* 
+* Bug fix.
 
 = v3.8.0 (24 July, 2023) =
 * Freemius  SDK version updated.

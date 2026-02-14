@@ -766,6 +766,7 @@ class Wpgsi_Admin {
     public function wpgsi_changeIntegrationStatus() {
         #
         if ( function_exists( 'current_user_can' ) && current_user_can( 'administrator' ) && current_user_can( 'publish_posts' ) && current_user_can( 'publish_pages' ) && current_user_can( 'edit_posts' ) && current_user_can( 'edit_others_posts' ) ) {
+            check_ajax_referer( 'wpgsi_ajax_nonce', 'wpgsi_nonce' );
             # Checking  SpreadsheetID is set or not
             if ( !isset( $_POST['integrationID'] ) or !is_numeric( $_POST['integrationID'] ) ) {
                 $this->common->wpgsi_log(
@@ -823,6 +824,7 @@ class Wpgsi_Admin {
     public function wpgsi_changeRemoteUpdateStatus( $id = '' ) {
         #
         if ( function_exists( 'current_user_can' ) && current_user_can( 'administrator' ) && current_user_can( 'publish_posts' ) && current_user_can( 'publish_pages' ) && current_user_can( 'edit_posts' ) && current_user_can( 'edit_others_posts' ) ) {
+            check_ajax_referer( 'wpgsi_ajax_nonce', 'wpgsi_nonce' );
             # Checking  SpreadsheetID is set or not
             if ( !isset( $_POST['integrationID'] ) or !is_numeric( $_POST['integrationID'] ) ) {
                 $this->common->wpgsi_log(
@@ -899,6 +901,7 @@ class Wpgsi_Admin {
      */
     public function wpgsi_createSheetColumnTitles() {
         if ( function_exists( 'current_user_can' ) && current_user_can( 'administrator' ) && current_user_can( 'publish_posts' ) && current_user_can( 'publish_pages' ) && current_user_can( 'edit_posts' ) && current_user_can( 'edit_others_posts' ) ) {
+            check_ajax_referer( 'wpgsi_ajax_nonce', 'wpgsi_nonce' );
             # Checking  SpreadsheetID is set or not
             if ( !isset( $_POST['integrationID'], $_POST['eventsAndTitles'] ) or !is_numeric( $_POST['integrationID'] ) ) {
                 $this->common->wpgsi_log(
@@ -1059,7 +1062,10 @@ class Wpgsi_Admin {
             # User Email
             $userBase64TokenArr['email'] = $current_user->data->user_email;
             # Creating token;
-            $userToken = base64_encode( json_encode( $userBase64TokenArr ) );
+            # Fix: Base64 encode the payload to prevent dots in JSON interfering with structural dot separator
+            $payload = base64_encode( json_encode( $userBase64TokenArr ) );
+            $signature = hash_hmac( 'sha256', $payload, wp_salt( 'auth' ) );
+            $userToken = base64_encode( $payload . '.' . $signature );
             # Check and Balance.
             if ( !empty( $userToken ) ) {
                 $sheetData = @json_decode( $Integrations->post_excerpt, TRUE );
@@ -1121,6 +1127,15 @@ class Wpgsi_Admin {
      */
     public function wpgsi_delete_connection( $id = '' ) {
         if ( function_exists( 'current_user_can' ) && current_user_can( 'administrator' ) && current_user_can( 'publish_posts' ) && current_user_can( 'publish_pages' ) && current_user_can( 'edit_posts' ) && current_user_can( 'edit_others_posts' ) ) {
+            if ( !isset( $_REQUEST['_wpnonce'] ) || !wp_verify_nonce( $_REQUEST['_wpnonce'], 'wpgsi_delete_relation_nonce' ) ) {
+                $this->common->wpgsi_log(
+                    get_class( $this ),
+                    __METHOD__,
+                    "403",
+                    "ERROR : Security check failed (nonce)."
+                );
+                wp_die( 'Security check failed' );
+            }
             # insert log
             $this->common->wpgsi_log(
                 get_class( $this ),
@@ -1167,6 +1182,15 @@ class Wpgsi_Admin {
             wp_redirect( admin_url( '/admin.php?page=wpgsi&rms=no_capability' ) );
             #
             exit;
+        }
+        if ( !isset( $_POST['wpgsi_nonce'] ) || !wp_verify_nonce( $_POST['wpgsi_nonce'], 'wpgsi_save_integration_action' ) ) {
+            $this->common->wpgsi_log(
+                get_class( $this ),
+                __METHOD__,
+                "403",
+                "ERROR : Security check failed."
+            );
+            wp_die( 'Security check failed' );
         }
         # Setting ERROR status
         $errorStatus = TRUE;

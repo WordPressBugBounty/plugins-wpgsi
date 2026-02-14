@@ -46,7 +46,7 @@ class Wpgsi {
 		if(defined('WPGSI_VERSION')){
 			$this->version = WPGSI_VERSION;
 		} else {
-			$this->version = '3.8.3';
+			$this->version = '3.8.4';
 		}
 
 		$this->plugin_name = 'wpgsi';

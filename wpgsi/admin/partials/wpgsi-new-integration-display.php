@@ -12,6 +12,7 @@
                 <!-- <pre> {{ $data }}  </pre>  -->
                 <br>
                 <form action="<?php echo esc_url(admin_url('admin-post.php'));?>" method="post">
+                    <?php wp_nonce_field( 'wpgsi_save_integration_action', 'wpgsi_nonce' ); ?>
                     <input type="hidden" name="action" value="wpgsi_Integration">
                     <input type="hidden" name="status" value="new_Integration">
                     <input type="hidden" name="DataSource" v-model="DataSource">
